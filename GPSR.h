@@ -11,8 +11,9 @@ class node;
 class node
 {
     public:
-    /* 节点名称 */
+    /* 节点名称与名称代数 */
     char name[50];
+    char namenum;
     /* 当前节点位置 */
     int pos_x;
     int pos_y;
@@ -31,6 +32,8 @@ class MainInterface
     public:
     /* 判断是否是第一次获取数据 */
     bool flags;
+    /* 判断是否到达目的节点 */
+    bool achive;
     /* 节点数 */
     int num;
     node* Node;
@@ -45,7 +48,8 @@ class MainInterface
     void UpdatePosition();
     /* 贪婪转发策略与右手转发策略 */
     void GreedyMethod();
-    void RightHandMethod();
+    void RightHandMethod(int& sel_node,int src,int dest);
+
 };
 
 #endif

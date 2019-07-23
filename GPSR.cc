@@ -1,12 +1,13 @@
 #include "GPSR.h"
 int main(int argc,char *argv[])
 {
-   MainInterface ui;
-   ui.time = 1;
-   ui.MainPicture();
-   sleep(ui.time);
-   ui.MainPicture();
-  
+    MainInterface ui;
+    ui.time = 1;
+    while(ui.achive){
+        ui.MainPicture();
+        sleep(ui.time);
+    }
+    endwin();
     return 0;
 }
 void MainInterface::GetData(node* &Node)
@@ -19,8 +20,9 @@ void MainInterface::GetData(node* &Node)
     FILE* fq = fopen("config.store1","r");
     for(int i = 0;i < num;++i){
         fscanf(fq,"%s%d%d",Node[i].name,&(Node[i].pos_x),&(Node[i].pos_y));
-        /* 设置通信半径 */
+        /* 设置通信半径与名称代数 */
         Node[i].radius = 3;
+        Node[i].namenum = i;
     }
     fclose(fq);
     /* 获取邻居节点 */
@@ -53,15 +55,15 @@ void MainInterface::MainPicture()
         standend();
         refresh();
     }
-    getch();
-    endwin();
+    UpdatePosition();
 }
 void MainInterface::UpdatePosition()
 {
   /* 贪婪转发策略 */
-
-  /* 右手准则 */
-
+    if(strcmp(Node[num-2].name,"源节点"))
+        GreedyMethod();
+    else
+        achive = false;
 
 }
 void MainInterface::GreedyMethod()
@@ -80,8 +82,34 @@ void MainInterface::GreedyMethod()
     }
     /* 赋初值，为了选取距离最短的点 */
     double distance = Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[dest].pos_x,Node[dest].pos_y);
+    /* 选取节点 */
+    int sel_node = -1;
     for(int i = 0;i < Node[src].Neighber_Node.size();++i){
-
+        if(Node[dest].Distance(Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y,Node[dest].pos_x,Node[dest].pos_y) < distance){
+            distance = Node[dest].Distance(Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y,Node[dest].pos_x,Node[dest].pos_y);
+            sel_node = i;
+        }
+    }
+    /* 右手转发策略 */
+    if(sel_node == -1){
+        RightHandMethod(sel_node,src,dest);
+        printf("右手转发策略！\n");
+    }
+    if(strcmp(Node[src].Neighber_Node[sel_node].name,"目的节点"))
+        strcpy(Node[src].name,Node[src].Neighber_Node[sel_node].name);
+    else
+       strcpy(Node[src].name,"*");
+    strcpy(Node[Node[src].Neighber_Node[sel_node].namenum].name,"源节点");
+}
+void MainInterface::RightHandMethod(int &sel_node,int src,int dest)
+{
+    /* 赋初值，为了选取距离最短的点 */
+    double distance =100; //Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[dest].pos_x,Node[dest].pos_y);
+     for(int i = 0;i < Node[src].Neighber_Node.size();++i){
+        if(Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y) < distance){
+            distance = Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y);
+            sel_node = i;
+        }
     }
 }
 void node::NeighberTable(MainInterface* ui)
