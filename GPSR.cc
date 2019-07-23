@@ -41,8 +41,6 @@ void MainInterface::MainPicture()
     clear();
     for(int i = 0;i < this->num;++i){
         move(Node[i].pos_x,Node[i].pos_y);
-        if(i%2 == 1)
-            standout();
         if(strcmp(Node[i].name,"源节点") == 0)
         addstr("S");
         else if(strcmp(Node[i].name,"目的节点") == 0)
@@ -51,8 +49,6 @@ void MainInterface::MainPicture()
         {
             addstr("*");
         }
-        if(i%2 == 1)
-        standend();
         refresh();
     }
     UpdatePosition();
@@ -90,10 +86,18 @@ void MainInterface::GreedyMethod()
             sel_node = i;
         }
     }
+
+    
     /* 右手转发策略 */
     if(sel_node == -1){
         RightHandMethod(sel_node,src,dest);
-        printf("右手转发策略！\n");
+        printf("右手转发策略\n");
+    }
+    else
+    {
+        /* 防止路由环 */
+        Node[src].Neighber_Node[sel_node].flags = false;
+        printf("贪婪转发策略\n");
     }
     if(strcmp(Node[src].Neighber_Node[sel_node].name,"目的节点"))
         strcpy(Node[src].name,Node[src].Neighber_Node[sel_node].name);
@@ -106,7 +110,7 @@ void MainInterface::RightHandMethod(int &sel_node,int src,int dest)
     /* 赋初值，为了选取距离最短的点 */
     double distance =100; //Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[dest].pos_x,Node[dest].pos_y);
      for(int i = 0;i < Node[src].Neighber_Node.size();++i){
-        if(Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y) < distance){
+        if(Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y) < distance && Node[src].Neighber_Node[i].flags){
             distance = Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y);
             sel_node = i;
         }

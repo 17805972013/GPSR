@@ -11,6 +11,8 @@ class node;
 class node
 {
     public:
+    /* 用于标记是否是经过的节点 */
+    bool flags;
     /* 节点名称与名称代数 */
     char name[50];
     char namenum;
