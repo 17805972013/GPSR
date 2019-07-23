@@ -51,7 +51,9 @@ class MainInterface
     /* 贪婪转发策略与右手转发策略 */
     void GreedyMethod();
     void RightHandMethod(int& sel_node,int src,int dest);
+    /* 存取路径 */
+    std::vector<char*> path;
+    void Path_Display(std::vector<char*>);
 
 };
-
 #endif

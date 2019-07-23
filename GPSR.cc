@@ -8,6 +8,8 @@ int main(int argc,char *argv[])
         sleep(ui.time);
     }
     endwin();
+    /* 显示转发路径 */
+    ui.Path_Display(ui.path);
     return 0;
 }
 void MainInterface::GetData(node* &Node)
@@ -76,12 +78,14 @@ void MainInterface::GreedyMethod()
             dest = i;
         }
     }
+     /* 存取节点路径 */
+    path.push_back(Node[src].name);
     /* 赋初值，为了选取距离最短的点 */
     double distance = Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[dest].pos_x,Node[dest].pos_y);
     /* 选取节点 */
     int sel_node = -1;
     for(int i = 0;i < Node[src].Neighber_Node.size();++i){
-        if(Node[dest].Distance(Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y,Node[dest].pos_x,Node[dest].pos_y) < distance){
+        if(Node[dest].Distance(Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y,Node[dest].pos_x,Node[dest].pos_y) <= distance){
             distance = Node[dest].Distance(Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y,Node[dest].pos_x,Node[dest].pos_y);
             sel_node = i;
         }
@@ -92,6 +96,10 @@ void MainInterface::GreedyMethod()
     if(sel_node == -1){
         RightHandMethod(sel_node,src,dest);
         printf("右手转发策略\n");
+        if(sel_node == -1){
+            perror("无法到达目的地\n");
+            exit(0);
+        }
     }
     else
     {
@@ -108,21 +116,33 @@ void MainInterface::GreedyMethod()
 void MainInterface::RightHandMethod(int &sel_node,int src,int dest)
 {
     /* 赋初值，为了选取距离最短的点 */
-    double distance =100; //Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[dest].pos_x,Node[dest].pos_y);
+    double distance =Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[dest].pos_x,Node[dest].pos_y);
      for(int i = 0;i < Node[src].Neighber_Node.size();++i){
-        if(Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y) < distance && Node[src].Neighber_Node[i].flags){
+        if(Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y) <= distance  && Node[src].Neighber_Node[i].flags){
             distance = Node[src].Distance(Node[src].pos_x,Node[src].pos_y,Node[src].Neighber_Node[i].pos_x,Node[src].Neighber_Node[i].pos_y);
             sel_node = i;
         }
     }
 }
+void MainInterface::Path_Display(std::vector<char*> p)
+{
+    for(int i = 0;i < p.size();++i)
+        if(i != p.size()-1)
+            std::cout<<p[i]<<"-->";
+        else
+        {
+            std::cout<<"目的节点"<<std::endl;
+        }
+        
+}
+
 void node::NeighberTable(MainInterface* ui)
 {
     double distance;
      for(int i = 0;i < ui->num;++i){
         if(strcmp(ui->Node[i].name,this->name)){    
             distance = this->Distance(ui->Node[i].pos_x,ui->Node[i].pos_y,pos_x,pos_y);
-            if(distance < this->radius){
+            if(distance <= this->radius){
                 Neighber_Node.push_back(ui->Node[i]);
             }
         }
