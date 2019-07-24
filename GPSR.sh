@@ -1,5 +1,6 @@
 #!/bin/sh
 #读取数据
+clear
 sed '/^#/d' config.xml | sort > config.store
 tr [,:\(\)] [' '' '' '' '] < config.store > config.store1
 rm -f config.store

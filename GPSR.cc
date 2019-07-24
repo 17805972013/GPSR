@@ -42,7 +42,7 @@ void MainInterface::MainPicture()
     initscr();
     clear();
     for(int i = 0;i < this->num;++i){
-        move(Node[i].pos_x,Node[i].pos_y);
+        move(Node[i].pos_y,Node[i].pos_x);
         if(strcmp(Node[i].name,"源节点") == 0)
         addstr("S");
         else if(strcmp(Node[i].name,"目的节点") == 0)
